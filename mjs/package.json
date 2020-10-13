@@ -1,0 +1,33 @@
+{
+  "name": "@darkwolf/helper.mjs",
+  "version": "1.0.0",
+  "description": "Helper",
+  "type": "module",
+  "exports": {
+    ".": "./lib/index.mjs",
+    "./": "./lib/",
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darkwolf/node-helper.git"
+  },
+  "keywords": [
+    "darkwolf",
+    "dw",
+    "helper",
+    "mjs"
+  ],
+  "author": "Pavel Wolf",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Darkwolf/node-helper/issues"
+  },
+  "homepage": "https://github.com/Darkwolf/node-helper#readme"
+}

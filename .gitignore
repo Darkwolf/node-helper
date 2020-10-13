@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+# ECMAScript
+mjs/LICENSE
+mjs/README.md
+
+# CommonJS
+cjs/LICENSE
+cjs/README.md
