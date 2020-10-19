@@ -64,7 +64,7 @@ Helper.template = (string, props, options = {}) => {
     return normalize ? Helper.normalizeString(prop) : prop
   })
 }
-Helper.equal = (value, other) => value === other
+Helper.equals = (value, other) => value === other
 Helper.isType = (value, type) => typeof value === type
 Helper.isTag = (value, tag) => Helper.tag(value) === tag
 Helper.isInstance = (value, constructor) => value instanceof constructor

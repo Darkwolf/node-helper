@@ -120,8 +120,9 @@
   * `normalize` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
 * returns: <[string][string]>
 
-#### `static` Helper.equal(value)
+#### `static` Helper.equals(value, other)
 * `value` <[any][Object]>
+* `other` <[any][Object]>
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.isType(value, type)

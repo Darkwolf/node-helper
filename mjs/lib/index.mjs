@@ -140,7 +140,7 @@ export default class Helper {
     })
   }
 
-  static equal(value, other) {
+  static equals(value, other) {
     return value === other
   }
 
