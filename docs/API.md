@@ -248,7 +248,7 @@
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
-#### `static` Helper.isSafeInteger(PavelWolfDark)
+#### `static` Helper.isSafeInteger(value)
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
