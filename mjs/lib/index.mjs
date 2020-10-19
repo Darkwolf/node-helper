@@ -57,6 +57,10 @@ export default class Helper {
     return !Helper.isNil(path ? Helper.get(value, path) : value)
   }
 
+  static boolean(value) {
+    return !!value
+  }
+
   static float(value) {
     return parseFloat(value)
   }
@@ -212,6 +216,10 @@ export default class Helper {
     return Buffer.isBuffer(value)
   }
 
+  static isTypedArray(value) {
+    return value instanceof TypedArray
+  }
+
   static isRegExp(value) {
     return value instanceof RegExp
   }
@@ -314,6 +322,6 @@ export default class Helper {
   }
 
   static isBase64(value) {
-    return /^([A-Za-z\d+/]{4}|([A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)|([A-Za-z\d+/]{4})+([A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?)$/.test(value)
+    return /^(?:[A-Za-z\d+/]{4}|(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)|(?:[A-Za-z\d+/]{4})+(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?)$/.test(value)
   }
 }

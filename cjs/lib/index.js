@@ -36,6 +36,7 @@ Helper.has = (object, path) => Helper.keyPath(path).reduce((obj, key, i, parts) 
   return obj ? obj.hasOwnProperty(key) : false
 }, object)
 Helper.exists = (value, path) => !Helper.isNil(path ? Helper.get(value, path) : value)
+Helper.boolean = value => !!value
 Helper.float = value => parseFloat(value)
 Helper.integer = value => parseInt(value)
 Helper.chunk = (array, size) => array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
@@ -82,6 +83,7 @@ Helper.isString = value => typeof value === 'string' || value instanceof String
 Helper.isSymbol = value => typeof value === 'symbol'
 Helper.isArray = value => Array.isArray(value)
 Helper.isBuffer = value => Buffer.isBuffer(value)
+Helper.isTypedArray = value => value instanceof TypedArray
 Helper.isRegExp = value => value instanceof RegExp
 Helper.isSet = value => value instanceof Set
 Helper.isMap = value => value instanceof Map
@@ -113,6 +115,6 @@ Helper.isJSON = value => {
   }
 }
 Helper.isASCII = value => /^[ -~]+$/.test(value)
-Helper.isBase64 = value => /^([A-Za-z\d+/]{4}|([A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)|([A-Za-z\d+/]{4})+([A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?)$/.test(value)
+Helper.isBase64 = value => /^(?:[A-Za-z\d+/]{4}|(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)|(?:[A-Za-z\d+/]{4})+(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?)$/.test(value)
 
 module.exports = Helper

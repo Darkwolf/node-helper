@@ -40,6 +40,10 @@
 * `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will validate the last argument of the array, then `'[-2]'` will validate the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be validated.
 * returns: <[boolean][boolean]>
 
+#### `static` Helper.boolean(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
 #### `static` Helper.float(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
@@ -192,6 +196,10 @@
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.isBuffer(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isTypedArray(value)
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
