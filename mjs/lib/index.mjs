@@ -69,6 +69,10 @@ export default class Helper {
     return parseInt(value)
   }
 
+  static string(value) {
+    return Helper.exists(value) ? `${value}` : ''
+  }
+
   static chunk(array, size) {
     return array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
   }
@@ -125,10 +129,6 @@ export default class Helper {
     return Helper.words(string).map(Helper.lowerCase).join('.')
   }
 
-  static normalizeString(value) {
-    return Helper.exists(value) ? `${value}` : ''
-  }
-
   static template(string, props, options = {}) {
     const normalize = Helper.isBoolean(options.normalize) ? options.normalize : true
     return string.replace(/{([^{}]+)}/g, (input, name) => {
@@ -136,7 +136,7 @@ export default class Helper {
       if (Helper.isFunction(prop)) {
         prop = prop()
       }
-      return normalize ? Helper.normalizeString(prop) : prop
+      return normalize ? Helper.string(prop) : prop
     })
   }
 

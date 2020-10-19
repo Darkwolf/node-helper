@@ -39,6 +39,7 @@ Helper.exists = (value, path) => !Helper.isNil(path ? Helper.get(value, path) : 
 Helper.boolean = value => !!value
 Helper.float = value => parseFloat(value)
 Helper.integer = value => parseInt(value)
+Helper.string = value => Helper.exists(value) ? `${value}` : ''
 Helper.chunk = (array, size) => array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
 Helper.shuffle = array => array.map(value => [Math.random(), value]).sort(([a], [b]) => a - b).map(([random, value]) => value)
 Helper.unique = array => [...new Set(array)]
@@ -53,7 +54,6 @@ Helper.constantCase = string => Helper.words(string).join('_').toUpperCase()
 Helper.kebabCase = string => Helper.words(string).join('-').toLowerCase()
 Helper.trainCase = string => Helper.words(string).map(Helper.capitalize).join('-')
 Helper.dotCase = string => Helper.words(string).map(Helper.lowerCase).join('.')
-Helper.normalizeString = value => Helper.exists(value) ? `${value}` : ''
 Helper.template = (string, props, options = {}) => {
   const normalize = Helper.isBoolean(options.normalize) ? options.normalize : true
   return string.replace(/{([^{}]+)}/g, (input, name) => {
@@ -61,7 +61,7 @@ Helper.template = (string, props, options = {}) => {
     if (Helper.isFunction(prop)) {
       prop = prop()
     }
-    return normalize ? Helper.normalizeString(prop) : prop
+    return normalize ? Helper.string(prop) : prop
   })
 }
 Helper.equals = (value, other) => value === other

@@ -52,6 +52,10 @@
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
+#### `static` Helper.string(value)
+* `value` <[string][string]> If `undefined` or `null` will be return `''`.
+* returns: <[string][string]>
+
 #### `static` Helper.chunk(array, size)
 * `array` <[Array][Array]>
 * `size` <[number][number]>
@@ -107,10 +111,6 @@
 
 #### `static` Helper.dotCase(string)
 * `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave.darkwolf'`.
-* returns: <[string][string]>
-
-#### `static` Helper.normalizeString(value)
-* `value` <[string][string]> If `undefined` or `null` will be return `''`.
 * returns: <[string][string]>
 
 #### `static` Helper.template(string, props[, options])
