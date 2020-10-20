@@ -61,19 +61,43 @@ export default class Helper {
     return !!value
   }
 
+  static number(value) {
+    return Number(value)
+  }
+
+  static finite(value) {
+    const number = Number(value)
+    return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
+  }
+
   static float(value) {
-    return parseFloat(value)
+    return Helper.finite(value)
   }
 
   static integer(value) {
-    return parseInt(value)
+    const number = Number(value)
+    return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
+  }
+
+  static safeInteger(value) {
+    const number = Number(value)
+    return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
   }
 
   static string(value) {
     return Helper.exists(value) ? `${value}` : ''
   }
 
-  static chunk(array, size) {
+  static now() {
+    return Date.now()
+  }
+
+  static unix(options = {}) {
+    const timestamp = Date.now() / 1000
+    return options.millis ? timestamp : Math.floor(timestamp)
+  }
+
+  static chunk(array, size = 1) {
     return array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
   }
 
@@ -81,7 +105,7 @@ export default class Helper {
     return array.map(value => [Math.random(), value]).sort(([a], [b]) => a - b).map(([random, value]) => value)
   }
 
-  static unique(array) {
+  static uniq(array) {
     return [...new Set(array)]
   }
 

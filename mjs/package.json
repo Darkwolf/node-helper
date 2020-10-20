@@ -1,6 +1,6 @@
 {
   "name": "@darkwolf/helper.mjs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Helper",
   "type": "module",
   "exports": {

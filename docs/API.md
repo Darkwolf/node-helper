@@ -44,6 +44,14 @@
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
+#### `static` Helper.number(value)
+* `value` <[any][Object]>
+* returns: <[number][number]>
+
+#### `static` Helper.finite(value)
+* `value` <[any][Object]>
+* returns: <[number][number]>
+
 #### `static` Helper.float(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
@@ -52,20 +60,32 @@
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
+#### `static` Helper.safeInteger(value)
+* `value` <[any][Object]>
+* returns: <[number][number]>
+
 #### `static` Helper.string(value)
 * `value` <[string][string]> If `undefined` or `null` will be return `''`.
 * returns: <[string][string]>
 
+#### `static` Helper.now()
+* returns: <[number][number]>
+
+#### `static` Helper.unix([options])
+* `options` <[Object][Object]>
+  * `millis` <?[boolean][boolean]> If `true` will return the current Unix timestamp in seconds with millisecond fraction. Defaults to `false`.
+* returns: <[number][number]>
+
 #### `static` Helper.chunk(array, size)
 * `array` <[Array][Array]>
-* `size` <[number][number]>
+* `size` <[number][number]> Defaults to `1`.
 * returns: <[Array][Array]<[Array][Array]>>
 
 #### `static` Helper.shuffle(array)
 * `array` <[Array][Array]>
 * returns: <[Array][Array]>
 
-#### `static` Helper.unique(array)
+#### `static` Helper.uniq(array)
 * `array` <[Array][Array]>
 * returns: <[Array][Array]>
 

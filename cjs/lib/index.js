@@ -37,12 +37,29 @@ Helper.has = (object, path) => Helper.keyPath(path).reduce((obj, key, i, parts) 
 }, object)
 Helper.exists = (value, path) => !Helper.isNil(path ? Helper.get(value, path) : value)
 Helper.boolean = value => !!value
-Helper.float = value => parseFloat(value)
-Helper.integer = value => parseInt(value)
+Helper.number = value => Number(value)
+Helper.finite = value => {
+  const number = Number(value)
+  return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
+}
+Helper.float = value => Helper.finite(value)
+Helper.integer = value => {
+  const number = Number(value)
+  return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
+}
+Helper.safeInteger = value => {
+  const number = Number(value)
+  return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
+}
 Helper.string = value => Helper.exists(value) ? `${value}` : ''
-Helper.chunk = (array, size) => array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
+Helper.now = () => Date.now()
+Helper.unix = (options = {}) => {
+  const timestamp = Date.now() / 1000
+  return options.millis ? timestamp : Math.floor(timestamp)
+}
+Helper.chunk = (array, size = 1) => array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
 Helper.shuffle = array => array.map(value => [Math.random(), value]).sort(([a], [b]) => a - b).map(([random, value]) => value)
-Helper.unique = array => [...new Set(array)]
+Helper.uniq = array => [...new Set(array)]
 Helper.words = string => string.match(/[A-Za-zА-ЯЁа-яё]?[a-z\dа-яё]+|[A-Z\dА-ЯЁ]+/g) || []
 Helper.capitalize = string => string.length ? string[0].toUpperCase() + string.slice(1).toLowerCase() : string
 Helper.lowerCase = string => string.toLowerCase()
