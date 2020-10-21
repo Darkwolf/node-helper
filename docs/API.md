@@ -323,3 +323,19 @@
 #### `static` Helper.isBase64(value)
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
+
+#### `static` Helper.isIPv4(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isIPv6(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isURL(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isUUID(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
