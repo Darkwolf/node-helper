@@ -81,7 +81,24 @@ Helper.template = (string, props, options = {}) => {
     return normalize ? Helper.string(prop) : prop
   })
 }
+Helper.padStart = (string, targetLength, padString) => string.padStart(targetLength, padString)
+Helper.padEnd = (string, targetLength, padString) => string.padEnd(targetLength, padString)
+Helper.repeat = (string, count) => string.repeat(count)
+Helper.replace = (string, regex, replacer) => string.replace(regex, replacer)
+Helper.replaceAll = (string, regex, replacer) => string.replaceAll(regex, replacer)
+Helper.slice = (input, startIndex, endIndex) => input.slice(startIndex, endIndex)
+Helper.substring = (string, startIndex, beforeIndex) => string.substring(startIndex, beforeIndex)
+Helper.trim = (string) => string.trim()
+Helper.indexOf = (input, searchValue, fromIndex) => input.indexOf(searchValue, fromIndex)
+Helper.lastIndexOf = (input, searchValue, fromIndex) => input.lastIndexOf(searchValue, fromIndex)
+Helper.match = (string, regex) => string.match(regex)
+Helper.matchAll = (string, regex) => string.matchAll(regex)
+Helper.search = (string, regex) => string.search(regex)
+Helper.split = (string, separator, limit) => string.split(separator, limit)
 Helper.equals = (value, other) => value === other
+Helper.startsWith = (string, searchValue, position) => string.startsWith(searchValue, position)
+Helper.endsWith = (string, searchValue, length) => string.endsWith(searchValue, length)
+Helper.includes = (input, searchValue, fromIndex) => input.includes(searchValue, fromIndex)
 Helper.isType = (value, type) => typeof value === type
 Helper.isTag = (value, tag) => Helper.tag(value) === tag
 Helper.isInstance = (value, constructor) => value instanceof constructor

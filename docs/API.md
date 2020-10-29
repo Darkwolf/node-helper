@@ -4,6 +4,8 @@
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
 [Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+[RegExp]: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+[Symbol.iterator]: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator
 
 # API
 ### class: Helper
@@ -140,9 +142,113 @@
   * `normalize` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
 * returns: <[string][string]>
 
+#### `static` Helper.padStart(string, targetLength[, padString])
+* `string` <[string][string]>
+* `targetLength` <[number][number]>
+* `padString` <[string][string]>
+* returns: <[string][string]>
+
+#### `static` Helper.padEnd(string, targetLength[, padString])
+* `string` <[string][string]>
+* `targetLength` <[number][number]>
+* `padString` <[string][string]>
+* returns: <[string][string]>
+
+#### `static` Helper.repeat(string, count)
+* `string` <[string][string]>
+* `count` <[number][number]>
+* returns: <[string][string]>
+
+#### `static` Helper.replace(string, regex, replacer)
+* `string` <[string][string]>
+* `regex` <[RegExp][RegExp] | [string][string]>
+* `replacer` <[string][string] | [Function][Function](<[string][string]>, ...<[string][string]>, <[number][number]>, <[string][string]>)>
+  * `match` <[string][string]>
+  * `...groups` <[string][string]>
+  * `offset` <[number][number]>
+  * `string` <[string][string]>
+* returns: <[string][string]>
+
+#### `static` Helper.replaceAll(string, regex, replacer)
+* `string` <[string][string]>
+* `regex` <[RegExp][RegExp] | [string][string]>
+* `replacer` <[string][string] | [Function][Function](<[string][string]>, ...<[string][string]>, <[number][number]>, <[string][string]>)>
+  * `match` <[string][string]>
+  * `...groups` <[string][string]>
+  * `offset` <[number][number]>
+  * `string` <[string][string]>
+* returns: <[string][string]>
+
+#### `static` Helper.slice(input, startIndex[, endIndex])
+* `input` <[string][string] | [Array][Array]>
+* `startIndex` <[number][number]>
+* `endIndex` <[number][number]>
+* returns: <[string][string] | [Array][Array]>
+
+#### `static` Helper.substring(string, startIndex[, beforeIndex])
+* `string` <[string][string]>
+* `startIndex` <[number][number]>
+* `beforeIndex` <[number][number]>
+* returns: <[string][string]>
+
+#### `static` Helper.trim(string)
+* `string` <[string][string]>
+* returns: <[string][string]>
+
+#### `static` Helper.indexOf(input, searchValue[, fromIndex])
+* `input` <[string][string] | [Array][Array]>
+* `searchValue` <[any][Object]>
+* `fromIndex` <[number][number]>
+* returns: <[number][number]>
+
+#### `static` Helper.lastIndexOf(input, searchValue[, fromIndex])
+* `input` <[string][string] | [Array][Array]>
+* `searchValue` <[any][Object]>
+* `fromIndex` <[number][number]>
+* returns: <[number][number]>
+
+#### `static` Helper.match(string, regex)
+* `string` <[string][string]>
+* `regex` <[RegExp][RegExp] | [string][string]>
+* returns: <?[Array][Array]<[string][string]>>
+
+#### `static` Helper.matchAll(string, regex)
+* `string` <[string][string]>
+* `regex` <[RegExp][RegExp] | [string][string]>
+* returns: <[Symbol.iterator][Symbol.iterator]<[Array][Array]<[string][string]>>>
+
+#### `static` Helper.search(string[, regex])
+* `string` <[string][string]>
+* `regex` <[RegExp][RegExp] | [string][string]>
+* returns: <[number][number]>
+
+#### `static` Helper.split(string[, separator[, limit]])
+* `string` <[string][string]>
+* `separator` <[RegExp][RegExp] | [string][string]>
+* `limit` <[number][number]>
+* returns: <[Array][Array]<[string][string]>>
+
 #### `static` Helper.equals(value, other)
 * `value` <[any][Object]>
 * `other` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.startsWith(string, searchValue[, position])
+* `string` <[string][string]>
+* `searchValue` <[any][Object]>
+* `position` <[number][number]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.endsWith(string, searchValue[, length])
+* `string` <[string][string]>
+* `searchValue` <[any][Object]>
+* `length` <[number][number]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.includes(input, searchValue[, fromIndex])
+* `input` <[string][string] | [Array][Array]>
+* `searchValue` <[any][Object]>
+* `fromIndex` <[number][number]>
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.isType(value, type)

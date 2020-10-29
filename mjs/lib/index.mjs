@@ -164,8 +164,76 @@ export default class Helper {
     })
   }
 
+  static padStart(string, targetLength, padString) {
+    return string.padStart(targetLength, padString)
+  }
+
+  static padEnd(string, targetLength, padString) {
+    return string.padEnd(targetLength, padString)
+  }
+
+  static repeat(string, count) {
+    return string.repeat(count)
+  }
+
+  static replace(string, regex, replacer) {
+    return string.replace(regex, replacer)
+  }
+
+  static replaceAll(string, regex, replacer) {
+    return string.replaceAll(regex, replacer)
+  }
+
+  static slice(input, startIndex, endIndex) {
+    return input.slice(startIndex, endIndex)
+  }
+
+  static substring(string, startIndex, beforeIndex) {
+    return string.substring(startIndex, beforeIndex)
+  }
+
+  static trim(string) {
+    return string.trim()
+  }
+
+  static indexOf(input, searchValue, fromIndex) {
+    return input.indexOf(searchValue, fromIndex)
+  }
+
+  static lastIndexOf(input, searchValue, fromIndex) {
+    return input.lastIndexOf(searchValue, fromIndex)
+  }
+
+  static match(string, regex) {
+    return string.match(regex)
+  }
+
+  static matchAll(string, regex) {
+    return string.matchAll(regex)
+  }
+
+  static search(string, regex) {
+    return string.search(regex)
+  }
+
+  static split(string, separator, limit) {
+    return string.split(separator, limit)
+  }
+
   static equals(value, other) {
     return value === other
+  }
+
+  static startsWith(string, searchValue, position) {
+    return string.startsWith(searchValue, position)
+  }
+
+  static endsWith(string, searchValue, length) {
+    return string.endsWith(searchValue, length)
+  }
+
+  static includes(input, searchValue, fromIndex) {
+    return input.includes(searchValue, fromIndex)
   }
 
   static isType(value, type) {

@@ -1,6 +1,6 @@
 {
   "name": "@darkwolf/helper.cjs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Helper",
   "main": "./lib/index.js",
   "engines": {
@@ -17,7 +17,8 @@
     "darkwolf",
     "dw",
     "helper",
-    "cjs"
+    "cjs",
+    "utils"
   ],
   "author": "Pavel Wolf",
   "license": "MIT",
