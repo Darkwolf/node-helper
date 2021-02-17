@@ -9,15 +9,15 @@
 
 # API
 ### class: Helper
-#### `static` Helper.type(value)
+#### `static` Helper.typeOf(value)
 * `value` <[any][Object]>
 * returns: <[string][string]>
 
-#### `static` Helper.tag(value)
+#### `static` Helper.tagOf(value)
 * `value` <[any][Object]>
 * returns: <[string][string]> Have format: `'[object <Tag>]'`.
 
-#### `static` Helper.keyPath(path)
+#### `static` Helper.toPath(path)
 * `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will return the last argument of the array, then `'[-2]'` will return the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be returned.
 * returns: <[Array][Array]<[string][string]>>
 
@@ -42,31 +42,31 @@
 * `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will validate the last argument of the array, then `'[-2]'` will validate the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be validated.
 * returns: <[boolean][boolean]>
 
-#### `static` Helper.boolean(value)
+#### `static` Helper.toBoolean(value)
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
-#### `static` Helper.number(value)
+#### `static` Helper.toNumber(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
-#### `static` Helper.finite(value)
+#### `static` Helper.toFinite(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
-#### `static` Helper.float(value)
+#### `static` Helper.toFloat(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
-#### `static` Helper.integer(value)
+#### `static` Helper.toInteger(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
-#### `static` Helper.safeInteger(value)
+#### `static` Helper.toSafeInteger(value)
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
-#### `static` Helper.string(value)
+#### `static` Helper.toString(value)
 * `value` <[string][string]> If `undefined` or `null` will be return `''`.
 * returns: <[string][string]>
 

@@ -1,6 +1,6 @@
 {
   "name": "@darkwolf/helper.cjs",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Helper",
   "main": "./lib/index.js",
   "engines": {

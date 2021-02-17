@@ -1,9 +1,9 @@
 class Helper {}
-Helper.type = value => typeof value
-Helper.tag = value => Object.prototype.toString.call(value)
-Helper.keyPath = path => (Array.isArray(path) ? path.join('.') : path).match(/[\w-@#$:]+|\[-?\d+\]/g) || []
-Helper.get = (object, path) => Helper.keyPath(path).reduce((obj, key, i, parts) => {
-  if (obj && i < parts.length) {
+Helper.typeOf = value => typeof value
+Helper.tagOf = value => Object.prototype.toString.call(value)
+Helper.toPath = path => (Array.isArray(path) ? path.join('.') : path).match(/[\w-@#$:]+|\[-?\d+\]/g) || []
+Helper.get = (object, path) => Helper.toPath(path).reduce((obj, key, i, path) => {
+  if (obj && i < path.length) {
     if (key.length && key.startsWith('[')) {
       const index = parseInt(key.slice(1, -1))
       key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
@@ -11,47 +11,47 @@ Helper.get = (object, path) => Helper.keyPath(path).reduce((obj, key, i, parts) 
     return obj[key]
   }
 }, object)
-Helper.set = (object, path, value) => Helper.keyPath(path).reduce((obj, key, i, parts) => {
+Helper.set = (object, path, value) => Helper.toPath(path).reduce((obj, key, i, path) => {
   if (key.length && key.startsWith('[')) {
     const index = parseInt(key.slice(1, -1))
     key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
   }
-  if (!Helper.isObjectLike(obj[key]) && i < parts.length - 1) {
-    const nextKey = parts[i + 1]
+  if (!Helper.isObjectLike(obj[key]) && i < path.length - 1) {
+    const nextKey = path[i + 1]
     obj[key] = nextKey.length && nextKey.startsWith('[') ? [] : {}
-  } else if (i === parts.length - 1) {
+  } else if (i === path.length - 1) {
     obj[key] = value
     return value
   }
   return obj[key]
 }, object)
-Helper.has = (object, path) => Helper.keyPath(path).reduce((obj, key, i, parts) => {
+Helper.has = (object, path) => Helper.toPath(path).reduce((obj, key, i, path) => {
   if (key.length && key.startsWith('[')) {
     const index = parseInt(key.slice(1, -1))
     key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
   }
-  if (obj && obj.hasOwnProperty(key) && i < parts.length - 1) {
+  if (obj && obj.hasOwnProperty(key) && i < path.length - 1) {
     return obj[key]
   }
   return obj ? obj.hasOwnProperty(key) : false
 }, object)
 Helper.exists = (value, path) => !Helper.isNil(path ? Helper.get(value, path) : value)
-Helper.boolean = value => !!value
-Helper.number = value => Number(value)
-Helper.finite = value => {
+Helper.toBoolean = value => !!value
+Helper.toNumber = value => Number(value)
+Helper.toFinite = value => {
   const number = Number(value)
   return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
 }
-Helper.float = value => Helper.finite(value)
-Helper.integer = value => {
+Helper.toFloat = value => Helper.toFinite(value)
+Helper.toInteger = value => {
   const number = Number(value)
   return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
 }
-Helper.safeInteger = value => {
+Helper.toSafeInteger = value => {
   const number = Number(value)
   return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
 }
-Helper.string = value => Helper.exists(value) ? `${value}` : ''
+Helper.toString = value => Helper.exists(value) ? `${value}` : ''
 Helper.now = () => Date.now()
 Helper.unix = (options = {}) => {
   const timestamp = Date.now() / 1000
@@ -78,7 +78,7 @@ Helper.template = (string, props, options = {}) => {
     if (Helper.isFunction(prop)) {
       prop = prop()
     }
-    return normalize ? Helper.string(prop) : prop
+    return normalize ? Helper.toString(prop) : prop
   })
 }
 Helper.padStart = (string, targetLength, padString) => string.padStart(targetLength, padString)
@@ -100,7 +100,7 @@ Helper.startsWith = (string, searchValue, position) => string.startsWith(searchV
 Helper.endsWith = (string, searchValue, length) => string.endsWith(searchValue, length)
 Helper.includes = (input, searchValue, fromIndex) => input.includes(searchValue, fromIndex)
 Helper.isType = (value, type) => typeof value === type
-Helper.isTag = (value, tag) => Helper.tag(value) === tag
+Helper.isTag = (value, tag) => Helper.tagOf(value) === tag
 Helper.isInstance = (value, constructor) => value instanceof constructor
 Helper.isUndefined = value => value === undefined
 Helper.isPrimitive = value => (typeof value !== 'object' && typeof value !== 'function') || value === null

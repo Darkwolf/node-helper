@@ -1,19 +1,19 @@
 export default class Helper {
-  static type(value) {
+  static typeOf(value) {
     return typeof value
   }
 
-  static tag(value) {
+  static tagOf(value) {
     return Object.prototype.toString.call(value)
   }
 
-  static keyPath(path) {
+  static toPath(path) {
     return (Array.isArray(path) ? path.join('.') : path).match(/[\w-@#$:]+|\[-?\d+\]/g) || []
   }
 
   static get(object, path) {
-    return Helper.keyPath(path).reduce((obj, key, i, parts) => {
-      if (obj && i < parts.length) {
+    return Helper.toPath(path).reduce((obj, key, i, path) => {
+      if (obj && i < path.length) {
         if (key.length && key.startsWith('[')) {
           const index = parseInt(key.slice(1, -1))
           key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
@@ -24,15 +24,15 @@ export default class Helper {
   }
 
   static set(object, path, value) {
-    return Helper.keyPath(path).reduce((obj, key, i, parts) => {
+    return Helper.toPath(path).reduce((obj, key, i, path) => {
       if (key.length && key.startsWith('[')) {
         const index = parseInt(key.slice(1, -1))
         key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
       }
-      if (!Helper.isObjectLike(obj[key]) && i < parts.length - 1) {
-        const nextKey = parts[i + 1]
+      if (!Helper.isObjectLike(obj[key]) && i < path.length - 1) {
+        const nextKey = path[i + 1]
         obj[key] = nextKey.length && nextKey.startsWith('[') ? [] : {}
-      } else if (i === parts.length - 1) {
+      } else if (i === path.length - 1) {
         obj[key] = value
         return value
       }
@@ -41,12 +41,12 @@ export default class Helper {
   }
 
   static has(object, path) {
-    return Helper.keyPath(path).reduce((obj, key, i, parts) => {
+    return Helper.toPath(path).reduce((obj, key, i, path) => {
       if (key.length && key.startsWith('[')) {
         const index = parseInt(key.slice(1, -1))
         key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
       }
-      if (obj && obj.hasOwnProperty(key) && i < parts.length - 1) {
+      if (obj && obj.hasOwnProperty(key) && i < path.length - 1) {
         return obj[key]
       }
       return obj ? obj.hasOwnProperty(key) : false
@@ -57,34 +57,34 @@ export default class Helper {
     return !Helper.isNil(path ? Helper.get(value, path) : value)
   }
 
-  static boolean(value) {
+  static toBoolean(value) {
     return !!value
   }
 
-  static number(value) {
+  static toNumber(value) {
     return Number(value)
   }
 
-  static finite(value) {
+  static toFinite(value) {
     const number = Number(value)
     return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
   }
 
-  static float(value) {
-    return Helper.finite(value)
+  static toFloat(value) {
+    return Helper.toFinite(value)
   }
 
-  static integer(value) {
+  static toInteger(value) {
     const number = Number(value)
     return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
   }
 
-  static safeInteger(value) {
+  static toSafeInteger(value) {
     const number = Number(value)
     return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
   }
 
-  static string(value) {
+  static toString(value) {
     return Helper.exists(value) ? `${value}` : ''
   }
 
@@ -160,7 +160,7 @@ export default class Helper {
       if (Helper.isFunction(prop)) {
         prop = prop()
       }
-      return normalize ? Helper.string(prop) : prop
+      return normalize ? Helper.toString(prop) : prop
     })
   }
 
@@ -241,7 +241,7 @@ export default class Helper {
   }
 
   static isTag(value, tag) {
-    return Helper.tag(value) === tag
+    return Helper.tagOf(value) === tag
   }
 
   static isInstance(value, constructor) {

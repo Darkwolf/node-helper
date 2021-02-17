@@ -8,7 +8,6 @@
 ```javascript
 // ECMAScript
 import Helper from '@darkwolf/helper.mjs'
-
 // CommonJS
 const Helper = require('@darkwolf/helper.cjs')
 
