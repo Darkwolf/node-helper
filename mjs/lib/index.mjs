@@ -7,54 +7,141 @@ export default class Helper {
     return Object.prototype.toString.call(value)
   }
 
-  static toPath(path) {
-    return (Array.isArray(path) ? path.join('.') : path).match(/[\w-@#$:]+|\[-?\d+\]/g) || []
+  static hasOwnProperty(object, property) {
+    return Object.prototype.hasOwnProperty.call(object, property)
   }
 
-  static get(object, path) {
-    return Helper.toPath(path).reduce((obj, key, i, path) => {
-      if (obj && i < path.length) {
-        if (key.length && key.startsWith('[')) {
-          const index = parseInt(key.slice(1, -1))
-          key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+  static get(object, path, defaultValue) {
+    let result
+    if (Helper.isObjectLike(object)) {
+      path = Helper.toPath(path)
+      if (path.length) {
+        let obj = object
+        let i = 0
+        for (const key of path) {
+          const prop = obj[key]
+          if (i < path.length - 1) {
+            if (Helper.isObjectLike(prop)) {
+              obj = prop
+            } else {
+              obj = undefined
+              break
+            }
+          } else {
+            obj = prop
+          }
+          i++
         }
-        return obj[key]
+        result = obj
       }
-    }, object)
+    }
+    return result === undefined ? defaultValue : result
   }
 
   static set(object, path, value) {
-    return Helper.toPath(path).reduce((obj, key, i, path) => {
-      if (key.length && key.startsWith('[')) {
-        const index = parseInt(key.slice(1, -1))
-        key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+    if (Helper.isObjectLike(object)) {
+      path = Helper.toPath(path)
+      if (path.length) {
+        let obj = object
+        let i = 0
+        for (const key of path) {
+          if (i < path.length - 1) {
+            const prop = obj[key]
+            if (Helper.isObjectLike(prop)) {
+              obj = prop
+            } else {
+              const nextKey = path[i + 1]
+              obj[key] = Helper.isIndex(nextKey) ? [] : {}
+              obj = obj[key]
+            }
+          } else {
+            obj[key] = value
+          }
+          i++
+        }
       }
-      if (!Helper.isObjectLike(obj[key]) && i < path.length - 1) {
-        const nextKey = path[i + 1]
-        obj[key] = nextKey.length && nextKey.startsWith('[') ? [] : {}
-      } else if (i === path.length - 1) {
-        obj[key] = value
-        return value
+    }
+    return object
+  }
+
+  static delete(object, path) {
+    if (Helper.isObjectLike(object)) {
+      path = Helper.toPath(path)
+      if (path.length) {
+        let obj = object
+        let i = 0
+        for (const key of path) {
+          if (i < path.length - 1) {
+            const prop = obj[key]
+            if (Helper.isObjectLike(prop)) {
+              obj = prop
+            } else {
+              return false
+            }
+          } else {
+            return delete obj[key]
+          }
+          i++
+        }
       }
-      return obj[key]
-    }, object)
+    }
+    return false
   }
 
   static has(object, path) {
-    return Helper.toPath(path).reduce((obj, key, i, path) => {
-      if (key.length && key.startsWith('[')) {
-        const index = parseInt(key.slice(1, -1))
-        key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+    if (Helper.isObjectLike(object)) {
+      path = Helper.toPath(path)
+      if (path.length) {
+        let obj = object
+        let i = 0
+        for (const key of path) {
+          if (i < path.length - 1) {
+            const prop = obj[key]
+            if (Helper.isObjectLike(prop)) {
+              obj = prop
+            } else {
+              return false
+            }
+          } else {
+            return Helper.hasOwnProperty(obj, key)
+          }
+          i++
+        }
       }
-      if (obj && obj.hasOwnProperty(key) && i < path.length - 1) {
-        return obj[key]
-      }
-      return obj ? obj.hasOwnProperty(key) : false
-    }, object)
+    }
+    return false
   }
 
-  static exists(value, path) {
-    return !Helper.isNil(path ? Helper.get(value, path) : value)
+  static hasIn(object, path) {
+    if (Helper.isObjectLike(object)) {
+      path = Helper.toPath(path)
+      if (path.length) {
+        let obj = object
+        let i = 0
+        for (const key of path) {
+          if (i < path.length - 1) {
+            const prop = obj[key]
+            if (Helper.isObjectLike(prop)) {
+              obj = prop
+            } else {
+              return false
+            }
+          } else {
+            return key in obj
+          }
+          i++
+        }
+      }
+    }
+    return false
+  }
+
+  static exists(value) {
+    return !Helper.isNil(value)
+  }
+
+  static existsIn(object, path) {
+    return Helper.exists(Helper.get(object, path))
   }
 
   static toBoolean(value) {
@@ -88,6 +175,49 @@ export default class Helper {
     return Helper.exists(value) ? `${value}` : ''
   }
 
+  static toKey(value) {
+    return Helper.isSymbol(value) ? value : `${value}`
+  }
+
+  static stringToPath(string) {
+    const path = []
+    if (string.startsWith('.')) {
+      path.push('')
+    }
+    const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(?<quote>['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
+    for (const match of matches) {
+      const {expression, property} = match.groups
+      let [key] = match
+      if (Helper.exists(property)) {
+        key = property.replace(/\\(\\)?/g, '$1')
+      } else if (Helper.exists(expression)) {
+        key = expression
+      }
+      path.push(key)
+    }
+    return path
+  }
+
+  static toPath(value) {
+    return Array.isArray(value) ? value.map(Helper.toKey) : Helper.isString(value) ? Helper.stringToPath(value) : Helper.exists(value) ? [Helper.toKey(value)] : []
+  }
+
+  static add(augend, addend) {
+    return augend + addend
+  }
+
+  static subtract(minuend, subtrahend) {
+    return minuend - subtrahend
+  }
+
+  static multiply(multiplier, multiplicand) {
+    return multiplier * multiplicand
+  }
+
+  static divide(dividend, divisor) {
+    return dividend - divisor
+  }
+
   static now() {
     return Date.now()
   }
@@ -98,7 +228,7 @@ export default class Helper {
   }
 
   static chunk(array, size = 1) {
-    return array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
+    return array.reduce((result, value, i) => i % size ? result : [...result, array.slice(i, i + size)], [])
   }
 
   static shuffle(array) {
@@ -109,28 +239,48 @@ export default class Helper {
     return [...new Set(array)]
   }
 
-  static words(string) {
-    return string.match(/[A-Za-zА-ЯЁа-яё]?[a-z\dа-яё]+|[A-Z\dА-ЯЁ]+/g) || []
+  static asciiWords(string) {
+    return Helper.match(string, /[A-Z]?[a-z]+|[A-Z]+|\d+/g) || []
+  }
+
+  static unicodeWords(string) {
+    return Helper.match(string, /\p{Lu}?\p{Ll}+|\p{Lu}+|\p{L}[\p{L}\p{M}]*|\p{N}+|\p{Emoji}/gu) || []
+  }
+
+  static words(string, pattern) {
+    if (!Helper.exists(pattern)) {
+      return Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
+    }
+    return Helper.match(string, pattern) || []
+  }
+
+  static toLowerCase(string) {
+    return Helper.toString(string).toLowerCase()
+  }
+
+  static toUpperCase(string) {
+    return Helper.toString(string).toUpperCase()
   }
 
   static capitalize(string) {
+    string = Helper.toString(string)
     return string.length ? string[0].toUpperCase() + string.slice(1).toLowerCase() : string
   }
 
   static lowerCase(string) {
-    return string.toLowerCase()
+    return Helper.words(string).join(' ').toLowerCase()
   }
 
   static upperCase(string) {
-    return string.toUpperCase()
+    return Helper.words(string).join(' ').toUpperCase()
   }
 
   static camelCase(string) {
-    return Helper.words(string).reduce((prev, next, i) => prev + (i ? Helper.capitalize(next) : next.toLowerCase()), '')
+    return Helper.words(string).reduce((result, word, i) => result + (i ? Helper.capitalize(word) : word.toLowerCase()), '')
   }
 
   static pascalCase(string) {
-    return Helper.words(string).reduce((prev, next) => prev + Helper.capitalize(next), '')
+    return Helper.words(string).reduce((result, word) => result + Helper.capitalize(word), '')
   }
 
   static snakeCase(string) {
@@ -150,74 +300,77 @@ export default class Helper {
   }
 
   static dotCase(string) {
-    return Helper.words(string).map(Helper.lowerCase).join('.')
+    return Helper.words(string).join('.').toLowerCase()
   }
 
-  static template(string, props, options = {}) {
-    const normalize = Helper.isBoolean(options.normalize) ? options.normalize : true
-    return string.replace(/{([^{}]+)}/g, (input, name) => {
-      let prop = Helper.get(props, name)
+  static template(string, props = {}, options = {}) {
+    const ignoreNotExists = Helper.isBoolean(options.ignoreNotExists) ? options.ignoreNotExists : true
+    return Helper.replace(string, /(?<!\\){(.*?)(?<!\\)}|(\\\\?[{}])/g, (match, path, bracket) => {
+      if (bracket) {
+        return bracket.replace(/\\(\\)?/g, '$1')
+      }
+      let prop = Helper.get(props, path.replace(/\\(\\)?/g, '$1'))
       if (Helper.isFunction(prop)) {
         prop = prop()
       }
-      return normalize ? Helper.toString(prop) : prop
+      return ignoreNotExists ? Helper.toString(prop) : prop
     })
   }
 
   static padStart(string, targetLength, padString) {
-    return string.padStart(targetLength, padString)
+    return Helper.toString(string).padStart(targetLength, padString)
   }
 
   static padEnd(string, targetLength, padString) {
-    return string.padEnd(targetLength, padString)
+    return Helper.toString(string).padEnd(targetLength, padString)
   }
 
   static repeat(string, count) {
-    return string.repeat(count)
+    return Helper.toString(string).repeat(count)
   }
 
-  static replace(string, regex, replacer) {
-    return string.replace(regex, replacer)
+  static replace(string, pattern, replacer) {
+    return Helper.toString(string).replace(pattern, replacer)
   }
 
-  static replaceAll(string, regex, replacer) {
-    return string.replaceAll(regex, replacer)
+  static replaceAll(string, pattern, replacer) {
+    return Helper.toString(string).replaceAll(pattern, replacer)
   }
 
   static slice(input, startIndex, endIndex) {
-    return input.slice(startIndex, endIndex)
+    return (Array.isArray(input) ? input : Helper.toString(input)).slice(startIndex, endIndex)
   }
 
   static substring(string, startIndex, beforeIndex) {
-    return string.substring(startIndex, beforeIndex)
+    return Helper.toString(string).substring(startIndex, beforeIndex)
   }
 
   static trim(string) {
-    return string.trim()
+    return Helper.toString(string).trim()
   }
 
   static indexOf(input, searchValue, fromIndex) {
-    return input.indexOf(searchValue, fromIndex)
+    return (Array.isArray(input) ? input : Helper.toString(input)).indexOf(searchValue, fromIndex)
   }
 
   static lastIndexOf(input, searchValue, fromIndex) {
-    return input.lastIndexOf(searchValue, fromIndex)
+    return (Array.isArray(input) ? input : Helper.toString(input)).lastIndexOf(searchValue, fromIndex)
   }
 
-  static match(string, regex) {
-    return string.match(regex)
+  static match(string, pattern) {
+    return Helper.toString(string).match(pattern)
   }
 
-  static matchAll(string, regex) {
-    return string.matchAll(regex)
+  static matchAll(string, pattern) {
+    return Helper.toString(string).matchAll(pattern)
   }
 
-  static search(string, regex) {
-    return string.search(regex)
+  static search(string, pattern) {
+    return Helper.toString(string).search(pattern)
   }
 
   static split(string, separator, limit) {
-    return string.split(separator, limit)
+    return Helper.toString(string).split(separator, limit)
   }
 
   static equals(value, other) {
@@ -225,15 +378,15 @@ export default class Helper {
   }
 
   static startsWith(string, searchValue, position) {
-    return string.startsWith(searchValue, position)
+    return Helper.toString(string).startsWith(searchValue, position)
   }
 
   static endsWith(string, searchValue, length) {
-    return string.endsWith(searchValue, length)
+    return Helper.toString(string).endsWith(searchValue, length)
   }
 
   static includes(input, searchValue, fromIndex) {
-    return input.includes(searchValue, fromIndex)
+    return (Array.isArray(input) ? input : Helper.toString(input)).includes(searchValue, fromIndex)
   }
 
   static isType(value, type) {
@@ -398,6 +551,17 @@ export default class Helper {
 
   static isEmpty(value) {
     return !value.length
+  }
+
+  static isKey(value) {
+    return Helper.isString(value) || Helper.isSymbol(value)
+  }
+
+  static isIndex(value, length) {
+    if (!Helper.exists(length)) {
+      length = Number.MAX_SAFE_INTEGER
+    }
+    return !!length && !Helper.isSymbol(value) && /^(?:0|[1-9]\d*)$/.test(value) && value < length
   }
 
   static isJSON(value) {

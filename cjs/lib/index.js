@@ -1,41 +1,129 @@
 class Helper {}
 Helper.typeOf = value => typeof value
 Helper.tagOf = value => Object.prototype.toString.call(value)
-Helper.toPath = path => (Array.isArray(path) ? path.join('.') : path).match(/[\w-@#$:]+|\[-?\d+\]/g) || []
-Helper.get = (object, path) => Helper.toPath(path).reduce((obj, key, i, path) => {
-  if (obj && i < path.length) {
-    if (key.length && key.startsWith('[')) {
-      const index = parseInt(key.slice(1, -1))
-      key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+Helper.hasOwnProperty = (object, property) => Object.prototype.hasOwnProperty.call(object, property)
+Helper.get = (object, path, defaultValue) => {
+  let result
+  if (Helper.isObjectLike(object)) {
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        const prop = obj[key]
+        if (i < path.length - 1) {
+          if (Helper.isObjectLike(prop)) {
+            obj = prop
+          } else {
+            obj = undefined
+            break
+          }
+        } else {
+          obj = prop
+        }
+        i++
+      }
+      result = obj
     }
-    return obj[key]
   }
-}, object)
-Helper.set = (object, path, value) => Helper.toPath(path).reduce((obj, key, i, path) => {
-  if (key.length && key.startsWith('[')) {
-    const index = parseInt(key.slice(1, -1))
-    key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+  return result === undefined ? defaultValue : result
+}
+Helper.set = (object, path, value) => {
+  if (Helper.isObjectLike(object)) {
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        if (i < path.length - 1) {
+          const prop = obj[key]
+          if (Helper.isObjectLike(prop)) {
+            obj = prop
+          } else {
+            const nextKey = path[i + 1]
+            obj[key] = Helper.isIndex(nextKey) ? [] : {}
+            obj = obj[key]
+          }
+        } else {
+          obj[key] = value
+        }
+        i++
+      }
+    }
   }
-  if (!Helper.isObjectLike(obj[key]) && i < path.length - 1) {
-    const nextKey = path[i + 1]
-    obj[key] = nextKey.length && nextKey.startsWith('[') ? [] : {}
-  } else if (i === path.length - 1) {
-    obj[key] = value
-    return value
+  return object
+}
+Helper.delete = (object, path) => {
+  if (Helper.isObjectLike(object)) {
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        if (i < path.length - 1) {
+          const prop = obj[key]
+          if (Helper.isObjectLike(prop)) {
+            obj = prop
+          } else {
+            return false
+          }
+        } else {
+          return delete obj[key]
+        }
+        i++
+      }
+    }
   }
-  return obj[key]
-}, object)
-Helper.has = (object, path) => Helper.toPath(path).reduce((obj, key, i, path) => {
-  if (key.length && key.startsWith('[')) {
-    const index = parseInt(key.slice(1, -1))
-    key = Array.isArray(obj) && index < 0 ? Math.max(0, obj.length + index) : index
+  return false
+}
+Helper.has = (object, path) => {
+  if (Helper.isObjectLike(object)) {
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        if (i < path.length - 1) {
+          const prop = obj[key]
+          if (Helper.isObjectLike(prop)) {
+            obj = prop
+          } else {
+            return false
+          }
+        } else {
+          return Helper.hasOwnProperty(obj, key)
+        }
+        i++
+      }
+    }
   }
-  if (obj && obj.hasOwnProperty(key) && i < path.length - 1) {
-    return obj[key]
+  return false
+}
+Helper.hasIn = (object, path) => {
+  if (Helper.isObjectLike(object)) {
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        if (i < path.length - 1) {
+          const prop = obj[key]
+          if (Helper.isObjectLike(prop)) {
+            obj = prop
+          } else {
+            return false
+          }
+        } else {
+          return key in obj
+        }
+        i++
+      }
+    }
   }
-  return obj ? obj.hasOwnProperty(key) : false
-}, object)
-Helper.exists = (value, path) => !Helper.isNil(path ? Helper.get(value, path) : value)
+  return false
+}
+Helper.exists = value => !Helper.isNil(value)
+Helper.existsIn = (object, path) => Helper.exists(Helper.get(object, path))
 Helper.toBoolean = value => !!value
 Helper.toNumber = value => Number(value)
 Helper.toFinite = value => {
@@ -52,53 +140,92 @@ Helper.toSafeInteger = value => {
   return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
 }
 Helper.toString = value => Helper.exists(value) ? `${value}` : ''
+Helper.toKey = value => Helper.isSymbol(value) ? value : `${value}`
+Helper.stringToPath = string => {
+  const path = []
+  if (string.startsWith('.')) {
+    path.push('')
+  }
+  const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(?<quote>['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
+  for (const match of matches) {
+    const {expression, property} = match.groups
+    let [key] = match
+    if (Helper.exists(property)) {
+      key = property.replace(/\\(\\)?/g, '$1')
+    } else if (Helper.exists(expression)) {
+      key = expression
+    }
+    path.push(key)
+  }
+  return path
+}
+Helper.toPath = value => Array.isArray(value) ? value.map(Helper.toKey) : Helper.isString(value) ? Helper.stringToPath(value) : Helper.exists(value) ? [Helper.toKey(value)] : []
+Helper.add = (augend, addend) => augend + addend
+Helper.subtract = (minuend, subtrahend) => minuend - subtrahend
+Helper.multiply = (multiplier, multiplicand) => multiplier * multiplicand
+Helper.divide = (dividend, divisor) => dividend / divisor
 Helper.now = () => Date.now()
 Helper.unix = (options = {}) => {
   const timestamp = Date.now() / 1000
   return options.millis ? timestamp : Math.floor(timestamp)
 }
-Helper.chunk = (array, size = 1) => array.reduce((arr, value, i) => i % size ? arr : [...arr, array.slice(i, i + size)], [])
+Helper.chunk = (array, size = 1) => array.reduce((result, value, i) => i % size ? result : [...result, array.slice(i, i + size)], [])
 Helper.shuffle = array => array.map(value => [Math.random(), value]).sort(([a], [b]) => a - b).map(([random, value]) => value)
 Helper.uniq = array => [...new Set(array)]
-Helper.words = string => string.match(/[A-Za-zА-ЯЁа-яё]?[a-z\dа-яё]+|[A-Z\dА-ЯЁ]+/g) || []
-Helper.capitalize = string => string.length ? string[0].toUpperCase() + string.slice(1).toLowerCase() : string
-Helper.lowerCase = string => string.toLowerCase()
-Helper.upperCase = string => string.toUpperCase()
-Helper.camelCase = string => Helper.words(string).reduce((prev, next, i) => prev + (i ? Helper.capitalize(next) : next.toLowerCase()), '')
-Helper.pascalCase = string => Helper.words(string).reduce((prev, next) => prev + Helper.capitalize(next), '')
+Helper.asciiWords = string => Helper.match(string, /[A-Z]?[a-z]+|[A-Z]+|\d+/g) || []
+Helper.unicodeWords = string => Helper.match(string, /\p{Lu}?\p{Ll}+|\p{Lu}+|\p{L}[\p{L}\p{M}]*|\p{N}+|\p{Emoji}/gu) || []
+Helper.words = (string, pattern) => {
+  if (!Helper.exists(pattern)) {
+    return Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
+  }
+  return Helper.match(string, pattern) || []
+}
+Helper.toLowerCase = string => Helper.toString(string).toLowerCase()
+Helper.toUpperCase = string => Helper.toString(string).toUpperCase()
+Helper.capitalize = string => {
+  string = Helper.toString(string)
+  return string.length ? string[0].toUpperCase() + string.slice(1).toLowerCase() : string
+}
+Helper.lowerCase = string => Helper.words(string).join(' ').toLowerCase()
+Helper.upperCase = string => Helper.words(string).join(' ').toUpperCase()
+Helper.camelCase = string => Helper.words(string).reduce((result, word, i) => result + (i ? Helper.capitalize(word) : word.toLowerCase()), '')
+Helper.pascalCase = string => Helper.words(string).reduce((result, word) => result + Helper.capitalize(word), '')
 Helper.snakeCase = string => Helper.words(string).join('_').toLowerCase()
 Helper.constantCase = string => Helper.words(string).join('_').toUpperCase()
 Helper.kebabCase = string => Helper.words(string).join('-').toLowerCase()
 Helper.trainCase = string => Helper.words(string).map(Helper.capitalize).join('-')
-Helper.dotCase = string => Helper.words(string).map(Helper.lowerCase).join('.')
-Helper.template = (string, props, options = {}) => {
-  const normalize = Helper.isBoolean(options.normalize) ? options.normalize : true
-  return string.replace(/{([^{}]+)}/g, (input, name) => {
-    let prop = Helper.get(props, name)
+Helper.dotCase = string => Helper.words(string).join('.').toLowerCase()
+Helper.template = (string, props = {}, options = {}) => {
+  const ignoreNotExists = Helper.isBoolean(options.ignoreNotExists) ? options.ignoreNotExists : true
+  return Helper.replace(string, /(?<!\\){(.*?)(?<!\\)}|(\\\\?[{}])/g, (match, path, bracket) => {
+    if (bracket) {
+      return bracket.replace(/\\(\\)?/g, '$1')
+    }
+    let prop = Helper.get(props, path.replace(/\\(\\)?/g, '$1'))
     if (Helper.isFunction(prop)) {
       prop = prop()
     }
-    return normalize ? Helper.toString(prop) : prop
+    return ignoreNotExists ? Helper.toString(prop) : prop
   })
 }
-Helper.padStart = (string, targetLength, padString) => string.padStart(targetLength, padString)
-Helper.padEnd = (string, targetLength, padString) => string.padEnd(targetLength, padString)
-Helper.repeat = (string, count) => string.repeat(count)
-Helper.replace = (string, regex, replacer) => string.replace(regex, replacer)
-Helper.replaceAll = (string, regex, replacer) => string.replaceAll(regex, replacer)
-Helper.slice = (input, startIndex, endIndex) => input.slice(startIndex, endIndex)
-Helper.substring = (string, startIndex, beforeIndex) => string.substring(startIndex, beforeIndex)
-Helper.trim = (string) => string.trim()
-Helper.indexOf = (input, searchValue, fromIndex) => input.indexOf(searchValue, fromIndex)
-Helper.lastIndexOf = (input, searchValue, fromIndex) => input.lastIndexOf(searchValue, fromIndex)
-Helper.match = (string, regex) => string.match(regex)
-Helper.matchAll = (string, regex) => string.matchAll(regex)
-Helper.search = (string, regex) => string.search(regex)
-Helper.split = (string, separator, limit) => string.split(separator, limit)
+Helper.padStart = (string, targetLength, padString) => Helper.toString(string).padStart(targetLength, padString)
+Helper.padEnd = (string, targetLength, padString) => Helper.toString(string).padEnd(targetLength, padString)
+Helper.repeat = (string, count) => Helper.toString(string).repeat(count)
+Helper.replace = (string, pattern, replacer) => Helper.toString(string).replace(pattern, replacer)
+Helper.replaceAll = (string, pattern, replacer) => Helper.toString(string).replaceAll(pattern, replacer)
+Helper.slice = (input, startIndex, endIndex) => (Array.isArray(input) ? input : Helper.toString(input)).slice(startIndex, endIndex)
+Helper.substring = (string, startIndex, beforeIndex) => Helper.toString(string).substring(startIndex, beforeIndex)
+Helper.trim = (string) => Helper.toString(string).trim()
+Helper.indexOf = (input, searchValue, fromIndex) => (Array.isArray(input) ? input : Helper.toString(input)).indexOf(searchValue, fromIndex)
+Helper.lastIndexOf = (input, searchValue, fromIndex) => (Array.isArray(input) ? input : Helper.toString(input)).lastIndexOf(searchValue, fromIndex)
+Helper.match = (string, pattern) => Helper.toString(string).match(pattern)
+Helper.matchAll = (string, pattern) => Helper.toString(string).matchAll(pattern)
+Helper.search = (string, pattern) => Helper.toString(string).search(pattern)
+Helper.split = (string, separator, limit) => Helper.toString(string).split(separator, limit)
 Helper.equals = (value, other) => value === other
-Helper.startsWith = (string, searchValue, position) => string.startsWith(searchValue, position)
-Helper.endsWith = (string, searchValue, length) => string.endsWith(searchValue, length)
-Helper.includes = (input, searchValue, fromIndex) => input.includes(searchValue, fromIndex)
+Helper.startsWith = (string, searchValue, position) => Helper.toString(string).startsWith(searchValue, position)
+Helper.endsWith = (string, searchValue, length) => Helper.toString(string).endsWith(searchValue, length)
+Helper.includes = (input, searchValue, fromIndex) => (Array.isArray(input) ? input : Helper.toString(input)).includes(searchValue, fromIndex)
 Helper.isType = (value, type) => typeof value === type
 Helper.isTag = (value, tag) => Helper.tagOf(value) === tag
 Helper.isInstance = (value, constructor) => value instanceof constructor
@@ -140,6 +267,13 @@ Helper.isNonPositive = value => value <= 0
 Helper.isNatural = value => Number.isInteger(value) && value > 0
 Helper.isWhole = value => Number.isInteger(value) && value >= 0
 Helper.isEmpty = value => !value.length
+Helper.isKey = value => Helper.isString(value) || Helper.isSymbol(value)
+Helper.isIndex = (value, length) => {
+  if (!Helper.exists(length)) {
+    length = Number.MAX_SAFE_INTEGER
+  }
+  return !!length && !Helper.isSymbol(value) && /^(?:0|[1-9]\d*)$/.test(value) && value < length
+}
 Helper.isJSON = value => {
   try {
     JSON.parse(value)

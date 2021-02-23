@@ -11,10 +11,10 @@ import Helper from '@darkwolf/helper.mjs'
 // CommonJS
 const Helper = require('@darkwolf/helper.cjs')
 
-const obj = {
+const object = {
   ave: {
     darkwolf: {
-      arr: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+      array: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
     },
     user: {
       username: null,
@@ -22,19 +22,38 @@ const obj = {
     }
   }
 }
-Helper.get(obj, 'ave.darkwolf') // => {arr: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]}
-Helper.get(obj, ['ave', 'darkwolf', 'arr', '[-1]']) // => 1024
-Helper.get(obj, ['ave.darkwolf.arr[-11]']) // => 2
-Helper.has(obj, 'ave.darkwolf') // => true
-Helper.has(obj, 'ave.user.username') // => true
-Helper.has(obj, 'ave.user.email') // => true
+Helper.get(object, 'ave.darkwolf') // =>
+// {
+//   array: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+// }
+Helper.get(object, 'ave.darkwolf.array[0]') // => 2
+Helper.get(object, ['ave', 'darkwolf', 'array', '9']) // => 1024
+Helper.has(object, 'ave.darkwolf') // => true
+Helper.has(object, 'ave.user.username') // => true
+Helper.has(object, 'ave.user.email') // => true
 Helper.exists(false) // => true
-Helper.exists(obj, 'ave.user.username') // => false
-Helper.exists(obj, 'ave.user.email') // => false
-Helper.exists(obj, ['ave', 'darkwolf', 'arr', '[0]']) // => true
-Helper.exists(obj, ['ave.darkwolf.arr[10]']) // => false
-Helper.set(obj, 'ave.darkwolf', 'Ave, Darkwolf!') // => 'Ave, Darkwolf!'
-obj.ave.darkwolf // => 'Ave, Darkwolf!'
+Helper.existsIn(object, 'ave.user.username') // => false
+Helper.existsIn(object, 'ave.user.email') // => false
+Helper.existsIn(object, 'ave.darkwolf.array[0]') // => true
+Helper.existsIn(object, ['ave', 'darkwolf', 'array', '10']) // => false
+Helper.set(object, 'ave.darkwolf', 'Ave, Darkwolf!') // =>
+object.ave.darkwolf // => 'Ave, Darkwolf!'
+// {
+//   ave: {
+//     darkwolf: 'Ave, Darkwolf!',
+//     user: {
+//       username: null,
+//       email: undefined
+//     }
+//   }
+// }
+Helper.delete(object, 'ave.user') // => true
+object.ave // =>
+// {
+//   ave: {
+//     darkwolf: 'Ave, Darkwolf!'
+//   }
+// }
 Helper.template('Ave, @{username}!', {
   username: 'PavelWolfDark'
 }) // => 'Ave, @PavelWolfDark!'
@@ -45,7 +64,8 @@ Helper.template('WFC: {wallet.balance}', {
 }) // => 'WFC: 1.00000001'
 Helper.isIPv4('192.168.0.0') // => true
 Helper.isIPv6('::192.168.0.0') // => true
-Helper.isURL('Ave, Darkwolf!') // => false
+Helper.isURL('example.com') // => false
+Helper.isURL('https://example.com') // => true
 ```
 ## [API Documentation](https://github.com/Darkwolf/node-helper/blob/master/docs/API.md)
 ## Contact Me

@@ -17,29 +17,44 @@
 * `value` <[any][Object]>
 * returns: <[string][string]> Have format: `'[object <Tag>]'`.
 
-#### `static` Helper.toPath(path)
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will return the last argument of the array, then `'[-2]'` will return the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be returned.
-* returns: <[Array][Array]<[string][string]>>
+#### `static` Helper.hasOwnProperty(object, property)
+* `object` <[any][object]>
+* `property` <[string][string]>
+* returns: <[boolean][boolean]>
 
 #### `static` Helper.get(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will return the last argument of the array, then `'[-2]'` will return the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be returned.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be get.
 * returns: <[any][Object]>
 
 #### `static` Helper.set(object, path, value)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will set the last argument of the array, then `'[-2]'` will set the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be set.
-* `value` <[any][Object]> This value will be returned.
-* returns: <[any][Object]>
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be set.
+* `value` <[any][Object]>
+* returns: <[any][Object]> This object will be returned.
+
+#### `static` Helper.delete(object, path)
+* `object` <[Object][Object]>
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be deleted.
+* returns: <[any][Object]> This object will be returned.
 
 #### `static` Helper.has(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will validate the last argument of the array, then `'[-2]'` will validate the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be validated.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
 * returns: <[boolean][boolean]>
 
-#### `static` Helper.exists(value[, path])
+#### `static` Helper.hasIn(object, path)
+* `object` <[Object][Object]>
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.exists(value)
 * `value` <[any][Object]> If `undefined` or `null` will be return `false`.
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.name.array[0]'`, `['object', 'property', 'name', 'array[0]']`, `['object.property', 'name.array[0]']` or `'[-1]'`. Path with index `'[-1]'` will validate the last argument of the array, then `'[-2]'` will validate the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be validated.
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.existsIn(object, path)
+* `value` <[any][Object]> If `undefined` or `null` will be return `false`.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.toBoolean(value)
@@ -70,6 +85,38 @@
 * `value` <[string][string]> If `undefined` or `null` will be return `''`.
 * returns: <[string][string]>
 
+#### `static` Helper.toKey(value)
+* `value` <[any][object]>
+* returns: <[string][string] | [Symbol][Symbol]>
+
+#### `static` Helper.stringToPath(string)
+* `string` <[string][string]> Must have format: `'object.property.key.path[0]'`. If `''` will be return `[]`.
+* returns: <[Array][Array]<[string][string]>>
+
+#### `static` Helper.toPath(path)
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will be return `[]`.
+* returns: <[Array][Array]<[string][string] | [Symbol][Symbol]>>
+
+#### `static` Helper.add(augend, addend)
+* `augend` <[number][number]>
+* `addend` <[number][number]>
+* returns: <[number][number]>
+
+#### `static` Helper.subtract(minuend, subtrahend)
+* `minuend` <[number][number]>
+* `subtrahend` <[number][number]>
+* returns: <[number][number]>
+
+#### `static` Helper.multiply(multiplier, multiplicand)
+* `multiplier` <[number][number]>
+* `multiplicand` <[number][number]>
+* returns: <[number][number]>
+
+#### `static` Helper.divide(dividend, divisor)
+* `dividend` <[number][number]>
+* `divisor` <[number][number]>
+* returns: <[number][number]>
+
 #### `static` Helper.now()
 * returns: <[number][number]>
 
@@ -91,20 +138,37 @@
 * `array` <[Array][Array]>
 * returns: <[Array][Array]>
 
-#### `static` Helper.words(string)
+#### `static` Helper.asciiWords(string)
 * `string` <[string][string]>
 * returns: <[Array][Array]<[string][string]>>
+
+#### `static` Helper.unicodeWords(string)
+* `string` <[string][string]>
+* returns: <[Array][Array]<[string][string]>>
+
+#### `static` Helper.words(string[, pattern])
+* `string` <[string][string]>
+* `pattern` <[string][string] | [RegExp][RegExp]>
+* returns: <[Array][Array]<[string][string]>>
+
+#### `static` Helper.toLowerCase(string)
+* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave, darkwolf!'`.
+* returns: <[string][string]>
+
+#### `static` Helper.toUpperCase(string)
+* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'AVE, DARKWOLF!'`.
+* returns: <[string][string]>
 
 #### `static` Helper.capitalize(string)
 * `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'Ave, darkwolf!'`.
 * returns: <[string][string]>
 
 #### `static` Helper.lowerCase(string)
-* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave, darkwolf!'`.
+* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave darkwolf'`.
 * returns: <[string][string]>
 
 #### `static` Helper.upperCase(string)
-* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'AVE, DARKWOLF!'`.
+* `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'AVE DARKWOLF'`.
 * returns: <[string][string]>
 
 #### `static` Helper.camelCase(string)
@@ -135,11 +199,11 @@
 * `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave.darkwolf'`.
 * returns: <[string][string]>
 
-#### `static` Helper.template(string, props[, options])
-* `string` <[string][string]> Property path must have format: `'{object.property.name.array[0]}'` or `'array[-1]'`. Path with index `'[-1]'` will return the last argument of the array, then `'[-2]'` will return the second last argument. If the negative modulo index is greater than the length of the array, the first argument will be returned.
-* `props` <[Object][Object]>
+#### `static` Helper.template(string[, props [, options])
+* `string` <[string][string]> Property path must have format: `'{object.property.key.path[0]}'`.
+* `props` <[Object][Object]> Defaults to `{}`.
 * `options` <[Object][Object]>
-  * `normalize` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
+  * `ignoreNotExists` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
 * returns: <[string][string]>
 
 #### `static` Helper.padStart(string, targetLength[, padString])
@@ -159,9 +223,9 @@
 * `count` <[number][number]>
 * returns: <[string][string]>
 
-#### `static` Helper.replace(string, regex, replacer)
+#### `static` Helper.replace(string, pattern, replacer)
 * `string` <[string][string]>
-* `regex` <[RegExp][RegExp] | [string][string]>
+* `pattern` <[RegExp][RegExp] | [string][string]>
 * `replacer` <[string][string] | [Function][Function](<[string][string]>, ...<[string][string]>, <[number][number]>, <[string][string]>)>
   * `match` <[string][string]>
   * `...groups` <[string][string]>
@@ -169,9 +233,9 @@
   * `string` <[string][string]>
 * returns: <[string][string]>
 
-#### `static` Helper.replaceAll(string, regex, replacer)
+#### `static` Helper.replaceAll(string, pattern, replacer)
 * `string` <[string][string]>
-* `regex` <[RegExp][RegExp] | [string][string]>
+* `pattern` <[RegExp][RegExp] | [string][string]>
 * `replacer` <[string][string] | [Function][Function](<[string][string]>, ...<[string][string]>, <[number][number]>, <[string][string]>)>
   * `match` <[string][string]>
   * `...groups` <[string][string]>
@@ -207,19 +271,19 @@
 * `fromIndex` <[number][number]>
 * returns: <[number][number]>
 
-#### `static` Helper.match(string, regex)
+#### `static` Helper.match(string, pattern)
 * `string` <[string][string]>
-* `regex` <[RegExp][RegExp] | [string][string]>
+* `pattern` <[RegExp][RegExp] | [string][string]>
 * returns: <?[Array][Array]<[string][string]>>
 
-#### `static` Helper.matchAll(string, regex)
+#### `static` Helper.matchAll(string, pattern)
 * `string` <[string][string]>
-* `regex` <[RegExp][RegExp] | [string][string]>
+* `pattern` <[RegExp][RegExp] | [string][string]>
 * returns: <[Symbol.iterator][Symbol.iterator]<[Array][Array]<[string][string]>>>
 
-#### `static` Helper.search(string[, regex])
+#### `static` Helper.search(string[, pattern])
 * `string` <[string][string]>
-* `regex` <[RegExp][RegExp] | [string][string]>
+* `pattern` <[RegExp][RegExp] | [string][string]>
 * returns: <[number][number]>
 
 #### `static` Helper.split(string[, separator[, limit]])
@@ -416,6 +480,15 @@
 
 #### `static` Helper.isEmpty(value)
 * `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isKey(value)
+* `value` <[any][Object]>
+* returns: <[boolean][boolean]>
+
+#### `static` Helper.isIndex(value[, length])
+* `value` <[any][Object]>
+* `length` <[number][number]>
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.isJSON(value)
