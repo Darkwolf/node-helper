@@ -317,6 +317,14 @@ export default class Helper {
     })
   }
 
+  static insert(string, insertString, startIndex, endIndex) {
+    string = Helper.toString(string)
+    insertString = Helper.toString(insertString)
+    startIndex = Helper.exists(startIndex) ? Number(startIndex) : string.length
+    endIndex = Helper.exists(endIndex) ? Number(endIndex) : string.length
+    return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
+  }
+
   static padStart(string, targetLength, padString) {
     return Helper.toString(string).padStart(targetLength, padString)
   }

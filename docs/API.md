@@ -206,6 +206,12 @@
   * `ignoreNotExists` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
 * returns: <[string][string]>
 
+#### `static` Helper.insert(string, insertString[, startIndex[, endIndex]])
+* `string` <[string][string]>
+* `insertString` <[string][string]>
+* `startIndex` <[number][number]> Defaults `string.length`.
+* `endIndex` <[number][number]> Defaults `string.length`.
+
 #### `static` Helper.padStart(string, targetLength[, padString])
 * `string` <[string][string]>
 * `targetLength` <[number][number]>

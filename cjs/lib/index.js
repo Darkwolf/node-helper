@@ -208,6 +208,13 @@ Helper.template = (string, props = {}, options = {}) => {
     return ignoreNotExists ? Helper.toString(prop) : prop
   })
 }
+Helper.insert = (string, insertString, startIndex, endIndex) => {
+  string = Helper.toString(string)
+  insertString = Helper.toString(insertString)
+  startIndex = Helper.exists(startIndex) ? Number(startIndex) : string.length
+  endIndex = Helper.exists(endIndex) ? Number(endIndex) : string.length
+  return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
+}
 Helper.padStart = (string, targetLength, padString) => Helper.toString(string).padStart(targetLength, padString)
 Helper.padEnd = (string, targetLength, padString) => Helper.toString(string).padEnd(targetLength, padString)
 Helper.repeat = (string, count) => Helper.toString(string).repeat(count)
