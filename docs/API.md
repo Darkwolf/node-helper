@@ -211,6 +211,7 @@
 * `insertString` <[string][string]>
 * `startIndex` <[number][number]> Defaults `string.length`.
 * `endIndex` <[number][number]> Defaults `string.length`.
+* returns: <[string][string]>
 
 #### `static` Helper.padStart(string, targetLength[, padString])
 * `string` <[string][string]>
