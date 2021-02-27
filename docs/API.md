@@ -24,28 +24,28 @@
 
 #### `static` Helper.get(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be get.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be get.
 * returns: <[any][Object]>
 
 #### `static` Helper.set(object, path, value)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be set.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be set.
 * `value` <[any][Object]>
 * returns: <[any][Object]> This object will be returned.
 
 #### `static` Helper.delete(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be deleted.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be deleted.
 * returns: <[any][Object]> This object will be returned.
 
 #### `static` Helper.has(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be used.
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.hasIn(object, path)
 * `object` <[Object][Object]>
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be used.
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.exists(value)
@@ -54,7 +54,7 @@
 
 #### `static` Helper.existsIn(object, path)
 * `value` <[any][Object]> If `undefined` or `null` will be return `false`.
-* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]`, will not be used.
+* `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be used.
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.toBoolean(value)
@@ -62,23 +62,23 @@
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.toNumber(value)
-* `value` <[any][Object]>
+* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
 * returns: <[number][number]>
 
 #### `static` Helper.toFinite(value)
-* `value` <[any][Object]>
+* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
 * returns: <[number][number]>
 
 #### `static` Helper.toFloat(value)
-* `value` <[any][Object]>
+* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
 * returns: <[number][number]>
 
 #### `static` Helper.toInteger(value)
-* `value` <[any][Object]>
+* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
 * returns: <[number][number]>
 
 #### `static` Helper.toSafeInteger(value)
-* `value` <[any][Object]>
+* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
 * returns: <[number][number]>
 
 #### `static` Helper.toString(value)

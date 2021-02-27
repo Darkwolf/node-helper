@@ -149,12 +149,12 @@ export default class Helper {
   }
 
   static toNumber(value) {
-    return Number(value)
+    const number = Number(value)
+    return Number.isNaN(number) ? 0 : number
   }
 
   static toFinite(value) {
-    const number = Number(value)
-    return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
+    return Math.max(Math.min(Helper.toNumber(value), Number.MAX_VALUE), -Number.MAX_VALUE)
   }
 
   static toFloat(value) {
@@ -162,13 +162,11 @@ export default class Helper {
   }
 
   static toInteger(value) {
-    const number = Number(value)
-    return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
+    return Math.floor(Helper.toFinite(value))
   }
 
   static toSafeInteger(value) {
-    const number = Number(value)
-    return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
+    return Math.max(Math.min(Helper.toNumber(value), Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
   }
 
   static toString(value) {
@@ -203,19 +201,19 @@ export default class Helper {
   }
 
   static add(augend, addend) {
-    return augend + addend
+    return Helper.toNumber(augend) + Helper.toNumber(addend)
   }
 
   static subtract(minuend, subtrahend) {
-    return minuend - subtrahend
+    return Helper.toNumber(minuend) - Helper.toNumber(subtrahend)
   }
 
   static multiply(multiplier, multiplicand) {
-    return multiplier * multiplicand
+    return Helper.toNumber(multiplier) * Helper.toNumber(multiplicand)
   }
 
   static divide(dividend, divisor) {
-    return dividend - divisor
+    return Helper.toNumber(dividend) / Helper.toNumber(divisor)
   }
 
   static now() {
@@ -320,8 +318,8 @@ export default class Helper {
   static insert(string, insertString, startIndex, endIndex) {
     string = Helper.toString(string)
     insertString = Helper.toString(insertString)
-    startIndex = Helper.exists(startIndex) ? Number(startIndex) : string.length
-    endIndex = Helper.exists(endIndex) ? Number(endIndex) : string.length
+    startIndex = Helper.exists(startIndex) ? Helper.toInteger(startIndex) : string.length
+    endIndex = Helper.exists(endIndex) ? Helper.toInteger(endIndex) : string.length
     return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
   }
 

@@ -125,20 +125,14 @@ Helper.hasIn = (object, path) => {
 Helper.exists = value => !Helper.isNil(value)
 Helper.existsIn = (object, path) => Helper.exists(Helper.get(object, path))
 Helper.toBoolean = value => !!value
-Helper.toNumber = value => Number(value)
-Helper.toFinite = value => {
+Helper.toNumber = value => {
   const number = Number(value)
-  return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : number
+  return Number.isNaN(number) ? 0 : number
 }
+Helper.toFinite = value => Math.max(Math.min(Helper.toNumber(value), Number.MAX_VALUE), -Number.MAX_VALUE)
 Helper.toFloat = value => Helper.toFinite(value)
-Helper.toInteger = value => {
-  const number = Number(value)
-  return Number.isNaN(number) ? 0 : number === Infinity ? Number.MAX_VALUE : number === -Infinity ? -Number.MAX_VALUE : parseInt(number)
-}
-Helper.toSafeInteger = value => {
-  const number = Number(value)
-  return Number.isNaN(number) ? 0 : Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
-}
+Helper.toInteger = value => Math.floor(Helper.toFinite(value))
+Helper.toSafeInteger = value => Math.max(Math.min(Helper.toNumber(value), Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
 Helper.toString = value => Helper.exists(value) ? `${value}` : ''
 Helper.toKey = value => Helper.isSymbol(value) ? value : `${value}`
 Helper.stringToPath = string => {
@@ -160,10 +154,10 @@ Helper.stringToPath = string => {
   return path
 }
 Helper.toPath = value => Array.isArray(value) ? value.map(Helper.toKey) : Helper.isString(value) ? Helper.stringToPath(value) : Helper.exists(value) ? [Helper.toKey(value)] : []
-Helper.add = (augend, addend) => augend + addend
-Helper.subtract = (minuend, subtrahend) => minuend - subtrahend
-Helper.multiply = (multiplier, multiplicand) => multiplier * multiplicand
-Helper.divide = (dividend, divisor) => dividend / divisor
+Helper.add = (augend, addend) => Helper.toNumber(augend) + Helper.toNumber(addend)
+Helper.subtract = (minuend, subtrahend) => Helper.toNumber(minuend) - Helper.toNumber(subtrahend)
+Helper.multiply = (multiplier, multiplicand) => Helper.toNumber(multiplier) * Helper.toNumber(multiplicand)
+Helper.divide = (dividend, divisor) => Helper.toNumber(dividend) / Helper.toNumber(divisor)
 Helper.now = () => Date.now()
 Helper.unix = (options = {}) => {
   const timestamp = Date.now() / 1000
@@ -211,8 +205,8 @@ Helper.template = (string, props = {}, options = {}) => {
 Helper.insert = (string, insertString, startIndex, endIndex) => {
   string = Helper.toString(string)
   insertString = Helper.toString(insertString)
-  startIndex = Helper.exists(startIndex) ? Number(startIndex) : string.length
-  endIndex = Helper.exists(endIndex) ? Number(endIndex) : string.length
+  startIndex = Helper.exists(startIndex) ? Helper.toInteger(startIndex) : string.length
+  endIndex = Helper.exists(endIndex) ? Helper.toInteger(endIndex) : string.length
   return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
 }
 Helper.padStart = (string, targetLength, padString) => Helper.toString(string).padStart(targetLength, padString)
