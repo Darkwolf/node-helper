@@ -37,7 +37,6 @@ Helper.existsIn(object, 'ave.user.email') // => false
 Helper.existsIn(object, 'ave.darkwolf.array[0]') // => true
 Helper.existsIn(object, ['ave', 'darkwolf', 'array', '10']) // => false
 Helper.set(object, 'ave.darkwolf', 'Ave, Darkwolf!') // =>
-object.ave.darkwolf // => 'Ave, Darkwolf!'
 // {
 //   ave: {
 //     darkwolf: 'Ave, Darkwolf!',
@@ -47,6 +46,7 @@ object.ave.darkwolf // => 'Ave, Darkwolf!'
 //     }
 //   }
 // }
+object.ave.darkwolf // => 'Ave, Darkwolf!'
 Helper.delete(object, 'ave.user') // => true
 object.ave // =>
 // {

@@ -22,9 +22,10 @@
 * `property` <[string][string]>
 * returns: <[boolean][boolean]>
 
-#### `static` Helper.get(object, path)
+#### `static` Helper.get(object, path, defaultValue)
 * `object` <[Object][Object]>
 * `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be get.
+* `defaultValue` <[any][Object]> If value is `undefined` will be returned. Defaults to `undefined`.
 * returns: <[any][Object]>
 
 #### `static` Helper.set(object, path, value)
@@ -36,7 +37,7 @@
 #### `static` Helper.delete(object, path)
 * `object` <[Object][Object]>
 * `path` <[string][string] | [Array][Array]<[string][string]>> Must have format: `'object.property.key.path[0]'`. If `undefined`, `null`, `''` or `[]` will not be deleted.
-* returns: <[any][Object]> This object will be returned.
+* returns: <[boolean][boolean]>
 
 #### `static` Helper.has(object, path)
 * `object` <[Object][Object]>
