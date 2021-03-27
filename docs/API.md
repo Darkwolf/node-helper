@@ -71,6 +71,7 @@
 * returns: <[number][number]>
 
 #### `static` Helper.toFloat(value)
+Alias for <[Helper.toFinite(value)](#static-helpertofinitevalue)>.
 * `value` <[any][Object]>
 * returns: <[number][number]>
 
@@ -439,6 +440,7 @@
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.isFloat(value)
+Alias for <[Helper.isFinite(value)](#static-helperisfinitevalue)>.
 * `value` <[any][Object]>
 * returns: <[boolean][boolean]>
 
