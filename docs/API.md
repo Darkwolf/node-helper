@@ -63,23 +63,23 @@
 * returns: <[boolean][boolean]>
 
 #### `static` Helper.toNumber(value)
-* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
+* `value` <[any][Object]>
 * returns: <[number][number]>
 
 #### `static` Helper.toFinite(value)
-* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
+* `value` <[any][Object]>
 * returns: <[number][number]>
 
 #### `static` Helper.toFloat(value)
-* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
+* `value` <[any][Object]>
 * returns: <[number][number]>
 
 #### `static` Helper.toInteger(value)
-* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
+* `value` <[any][Object]>
 * returns: <[number][number]>
 
 #### `static` Helper.toSafeInteger(value)
-* `value` <[any][Object]> If `undefined`, `null` or `NaN` will be return `0`.
+* `value` <[any][Object]>
 * returns: <[number][number]>
 
 #### `static` Helper.toString(value)
@@ -200,11 +200,11 @@
 * `string` <[string][string]> E.g., `'Ave, Darkwolf!'` will return `'ave.darkwolf'`.
 * returns: <[string][string]>
 
-#### `static` Helper.template(string[, props [, options])
+#### `static` Helper.template(string[, props[, options])
 * `string` <[string][string]> Property path must have format: `'{object.property.key.path[0]}'`.
 * `props` <[Object][Object]> Defaults to `{}`.
 * `options` <[Object][Object]>
-  * `ignoreNotExists` <?[boolean][boolean]> If `true` and property is `undefined` or `null` will be replaced with `''`. Defaults to `true`.
+  * `ignoreUndefined` <?[boolean][boolean]> If `true` and property is `undefined` will be replaced with `''`. Defaults to `true`.
 * returns: <[string][string]>
 
 #### `static` Helper.insert(string, insertString[, startIndex[, endIndex]])

@@ -12,28 +12,26 @@ export default class Helper {
   }
 
   static get(object, path, defaultValue) {
+    path = Helper.toPath(path)
     let result
-    if (Helper.isObjectLike(object)) {
-      path = Helper.toPath(path)
-      if (path.length) {
-        let obj = object
-        let i = 0
-        for (const key of path) {
-          const prop = obj[key]
-          if (i < path.length - 1) {
-            if (Helper.isObjectLike(prop)) {
-              obj = prop
-            } else {
-              obj = undefined
-              break
-            }
-          } else {
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        const prop = obj[key]
+        if (i < path.length - 1) {
+          if (prop) {
             obj = prop
+          } else {
+            obj = undefined
+            break
           }
-          i++
+        } else {
+          obj = prop
         }
-        result = obj
+        i++
       }
+      result = obj
     }
     return result === undefined ? defaultValue : result
   }
@@ -89,24 +87,22 @@ export default class Helper {
   }
 
   static has(object, path) {
-    if (Helper.isObjectLike(object)) {
-      path = Helper.toPath(path)
-      if (path.length) {
-        let obj = object
-        let i = 0
-        for (const key of path) {
-          if (i < path.length - 1) {
-            const prop = obj[key]
-            if (Helper.isObjectLike(prop)) {
-              obj = prop
-            } else {
-              return false
-            }
+    path = Helper.toPath(path)
+    if (path.length) {
+      let obj = object
+      let i = 0
+      for (const key of path) {
+        if (i < path.length - 1) {
+          const prop = obj[key]
+          if (prop) {
+            obj = prop
           } else {
-            return Helper.hasOwnProperty(obj, key)
+            return false
           }
-          i++
+        } else {
+          return Helper.hasOwnProperty(obj, key)
         }
+        i++
       }
     }
     return false
@@ -137,11 +133,11 @@ export default class Helper {
   }
 
   static exists(value) {
-    return !Helper.isNil(value)
+    return value != null
   }
 
   static existsIn(object, path) {
-    return Helper.exists(Helper.get(object, path))
+    return Helper.get(object, path) != null
   }
 
   static toBoolean(value) {
@@ -149,12 +145,11 @@ export default class Helper {
   }
 
   static toNumber(value) {
-    const number = Number(value)
-    return Number.isNaN(number) ? 0 : number
+    return Number(value)
   }
 
   static toFinite(value) {
-    return Math.max(Math.min(Helper.toNumber(value), Number.MAX_VALUE), -Number.MAX_VALUE)
+    return Math.max(Math.min(value, Number.MAX_VALUE), -Number.MAX_VALUE)
   }
 
   static toFloat(value) {
@@ -166,11 +161,11 @@ export default class Helper {
   }
 
   static toSafeInteger(value) {
-    return Math.max(Math.min(Helper.toNumber(value), Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
+    return Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
   }
 
   static toString(value) {
-    return Helper.exists(value) ? `${value}` : ''
+    return value != null ? `${value}` : ''
   }
 
   static toKey(value) {
@@ -178,42 +173,38 @@ export default class Helper {
   }
 
   static stringToPath(string) {
+    string = Helper.toString(string)
     const path = []
     if (string.startsWith('.')) {
       path.push('')
     }
-    const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(?<quote>['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
+    const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
     for (const match of matches) {
+      const [key] = match
       const {expression, property} = match.groups
-      let [key] = match
-      if (Helper.exists(property)) {
-        key = property.replace(/\\(\\)?/g, '$1')
-      } else if (Helper.exists(expression)) {
-        key = expression
-      }
-      path.push(key)
+      path.push(property !== undefined ? property.replace(/\\(\\)?/g, '$1') : expression !== undefined ? expression : key)
     }
     return path
   }
 
   static toPath(value) {
-    return Array.isArray(value) ? value.map(Helper.toKey) : Helper.isString(value) ? Helper.stringToPath(value) : Helper.exists(value) ? [Helper.toKey(value)] : []
+    return value !== undefined ? (Helper.isString(value) ? Helper.stringToPath(value) : Array.isArray(value) ? value.map(Helper.toKey) : [Helper.toKey(value)]) : []
   }
 
   static add(augend, addend) {
-    return Helper.toNumber(augend) + Helper.toNumber(addend)
+    return Number(augend) + Number(addend)
   }
 
   static subtract(minuend, subtrahend) {
-    return Helper.toNumber(minuend) - Helper.toNumber(subtrahend)
+    return Number(minuend) - Number(subtrahend)
   }
 
   static multiply(multiplier, multiplicand) {
-    return Helper.toNumber(multiplier) * Helper.toNumber(multiplicand)
+    return multiplier * multiplicand
   }
 
   static divide(dividend, divisor) {
-    return Helper.toNumber(dividend) / Helper.toNumber(divisor)
+    return dividend / divisor
   }
 
   static now() {
@@ -221,11 +212,12 @@ export default class Helper {
   }
 
   static unix(options = {}) {
-    const timestamp = Date.now() / 1000
+    const timestamp = Date.now() / 1e3
     return options.millis ? timestamp : Math.floor(timestamp)
   }
 
   static chunk(array, size = 1) {
+    size = Number(size)
     return array.reduce((result, value, i) => i % size ? result : [...result, array.slice(i, i + size)], [])
   }
 
@@ -246,10 +238,7 @@ export default class Helper {
   }
 
   static words(string, pattern) {
-    if (!Helper.exists(pattern)) {
-      return Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
-    }
-    return Helper.match(string, pattern) || []
+    return pattern !== undefined ? Helper.match(string, pattern) || [] : Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
   }
 
   static toLowerCase(string) {
@@ -302,7 +291,7 @@ export default class Helper {
   }
 
   static template(string, props = {}, options = {}) {
-    const ignoreNotExists = Helper.isBoolean(options.ignoreNotExists) ? options.ignoreNotExists : true
+    const ignoreUndefined = options.ignoreUndefined !== undefined ? options.ignoreUndefined : true
     return Helper.replace(string, /(?<!\\){(.*?)(?<!\\)}|(\\\\?[{}])/g, (match, path, bracket) => {
       if (bracket) {
         return bracket.replace(/\\(\\)?/g, '$1')
@@ -311,15 +300,15 @@ export default class Helper {
       if (Helper.isFunction(prop)) {
         prop = prop()
       }
-      return ignoreNotExists ? Helper.toString(prop) : prop
+      return ignoreUndefined && prop === undefined ? '' : prop
     })
   }
 
   static insert(string, insertString, startIndex, endIndex) {
     string = Helper.toString(string)
     insertString = Helper.toString(insertString)
-    startIndex = Helper.exists(startIndex) ? Helper.toInteger(startIndex) : string.length
-    endIndex = Helper.exists(endIndex) ? Helper.toInteger(endIndex) : string.length
+    startIndex = startIndex !== undefined ? startIndex : string.length
+    endIndex = endIndex !== undefined ? endIndex : string.length
     return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
   }
 
@@ -412,7 +401,8 @@ export default class Helper {
   }
 
   static isPrimitive(value) {
-    return (typeof value !== 'object' && typeof value !== 'function') || value === null
+    const type = typeof value
+    return (type !== 'object' && type !== 'function') || value === null
   }
 
   static isNull(value) {
@@ -428,7 +418,8 @@ export default class Helper {
   }
 
   static isObjectLike(value) {
-    return (typeof value === 'object' || typeof value === 'function') && value !== null
+    const type = typeof value
+    return (type === 'object' || type === 'function') && value !== null
   }
 
   static isPlainObject(value) {
@@ -556,17 +547,15 @@ export default class Helper {
   }
 
   static isEmpty(value) {
-    return !value.length
+    return !value || !value.length
   }
 
   static isKey(value) {
     return Helper.isString(value) || Helper.isSymbol(value)
   }
 
-  static isIndex(value, length) {
-    if (!Helper.exists(length)) {
-      length = Number.MAX_SAFE_INTEGER
-    }
+  static isIndex(value, length = Number.MAX_SAFE_INTEGER) {
+    length = Number(length)
     return !!length && !Helper.isSymbol(value) && /^(?:0|[1-9]\d*)$/.test(value) && value < length
   }
 

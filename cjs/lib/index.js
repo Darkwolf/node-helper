@@ -3,28 +3,26 @@ Helper.typeOf = value => typeof value
 Helper.tagOf = value => Object.prototype.toString.call(value)
 Helper.hasOwnProperty = (object, property) => Object.prototype.hasOwnProperty.call(object, property)
 Helper.get = (object, path, defaultValue) => {
+  path = Helper.toPath(path)
   let result
-  if (Helper.isObjectLike(object)) {
-    path = Helper.toPath(path)
-    if (path.length) {
-      let obj = object
-      let i = 0
-      for (const key of path) {
-        const prop = obj[key]
-        if (i < path.length - 1) {
-          if (Helper.isObjectLike(prop)) {
-            obj = prop
-          } else {
-            obj = undefined
-            break
-          }
-        } else {
+  if (path.length) {
+    let obj = object
+    let i = 0
+    for (const key of path) {
+      const prop = obj[key]
+      if (i < path.length - 1) {
+        if (prop) {
           obj = prop
+        } else {
+          obj = undefined
+          break
         }
-        i++
+      } else {
+        obj = prop
       }
-      result = obj
+      i++
     }
+    result = obj
   }
   return result === undefined ? defaultValue : result
 }
@@ -77,24 +75,22 @@ Helper.delete = (object, path) => {
   return false
 }
 Helper.has = (object, path) => {
-  if (Helper.isObjectLike(object)) {
-    path = Helper.toPath(path)
-    if (path.length) {
-      let obj = object
-      let i = 0
-      for (const key of path) {
-        if (i < path.length - 1) {
-          const prop = obj[key]
-          if (Helper.isObjectLike(prop)) {
-            obj = prop
-          } else {
-            return false
-          }
+  path = Helper.toPath(path)
+  if (path.length) {
+    let obj = object
+    let i = 0
+    for (const key of path) {
+      if (i < path.length - 1) {
+        const prop = obj[key]
+        if (prop) {
+          obj = prop
         } else {
-          return Helper.hasOwnProperty(obj, key)
+          return false
         }
-        i++
+      } else {
+        return Helper.hasOwnProperty(obj, key)
       }
+      i++
     }
   }
   return false
@@ -122,58 +118,49 @@ Helper.hasIn = (object, path) => {
   }
   return false
 }
-Helper.exists = value => !Helper.isNil(value)
-Helper.existsIn = (object, path) => Helper.exists(Helper.get(object, path))
+Helper.exists = value => value != null
+Helper.existsIn = (object, path) => Helper.get(object, path) != null
 Helper.toBoolean = value => !!value
-Helper.toNumber = value => {
-  const number = Number(value)
-  return Number.isNaN(number) ? 0 : number
-}
-Helper.toFinite = value => Math.max(Math.min(Helper.toNumber(value), Number.MAX_VALUE), -Number.MAX_VALUE)
+Helper.toNumber = value => Number(value)
+Helper.toFinite = value => Math.max(Math.min(value, Number.MAX_VALUE), -Number.MAX_VALUE)
 Helper.toFloat = value => Helper.toFinite(value)
 Helper.toInteger = value => Math.floor(Helper.toFinite(value))
-Helper.toSafeInteger = value => Math.max(Math.min(Helper.toNumber(value), Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
-Helper.toString = value => Helper.exists(value) ? `${value}` : ''
+Helper.toSafeInteger = value => Math.max(Math.min(value, Number.MAX_SAFE_INTEGER), Number.MIN_SAFE_INTEGER)
+Helper.toString = value => value != null ? `${value}` : ''
 Helper.toKey = value => Helper.isSymbol(value) ? value : `${value}`
 Helper.stringToPath = string => {
+  string = Helper.toString(string)
   const path = []
   if (string.startsWith('.')) {
     path.push('')
   }
-  const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(?<quote>['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
+  const matches = string.matchAll(/[^.[\]]+|\[(?<expression>[^'"][^[]*|(['"])(?<property>(?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g)
   for (const match of matches) {
+    const [key] = match
     const {expression, property} = match.groups
-    let [key] = match
-    if (Helper.exists(property)) {
-      key = property.replace(/\\(\\)?/g, '$1')
-    } else if (Helper.exists(expression)) {
-      key = expression
-    }
-    path.push(key)
+    path.push(property !== undefined ? property.replace(/\\(\\)?/g, '$1') : expression !== undefined ? expression : key)
   }
   return path
 }
-Helper.toPath = value => Array.isArray(value) ? value.map(Helper.toKey) : Helper.isString(value) ? Helper.stringToPath(value) : Helper.exists(value) ? [Helper.toKey(value)] : []
-Helper.add = (augend, addend) => Helper.toNumber(augend) + Helper.toNumber(addend)
-Helper.subtract = (minuend, subtrahend) => Helper.toNumber(minuend) - Helper.toNumber(subtrahend)
-Helper.multiply = (multiplier, multiplicand) => Helper.toNumber(multiplier) * Helper.toNumber(multiplicand)
-Helper.divide = (dividend, divisor) => Helper.toNumber(dividend) / Helper.toNumber(divisor)
+Helper.toPath = value => value !== undefined ? (Helper.isString(value) ? Helper.stringToPath(value) : Array.isArray(value) ? value.map(Helper.toKey) : [Helper.toKey(value)]) : []
+Helper.add = (augend, addend) => Number(augend) + Number(addend)
+Helper.subtract = (minuend, subtrahend) => Number(minuend) - Number(subtrahend)
+Helper.multiply = (multiplier, multiplicand) => multiplier * multiplicand
+Helper.divide = (dividend, divisor) => dividend / divisor
 Helper.now = () => Date.now()
 Helper.unix = (options = {}) => {
-  const timestamp = Date.now() / 1000
+  const timestamp = Date.now() / 1e3
   return options.millis ? timestamp : Math.floor(timestamp)
 }
-Helper.chunk = (array, size = 1) => array.reduce((result, value, i) => i % size ? result : [...result, array.slice(i, i + size)], [])
+Helper.chunk = (array, size = 1) => {
+  size = Number(size)
+  return array.reduce((result, value, i) => i % size ? result : [...result, array.slice(i, i + size)], [])
+}
 Helper.shuffle = array => array.map(value => [Math.random(), value]).sort(([a], [b]) => a - b).map(([random, value]) => value)
 Helper.uniq = array => [...new Set(array)]
 Helper.asciiWords = string => Helper.match(string, /[A-Z]?[a-z]+|[A-Z]+|\d+/g) || []
 Helper.unicodeWords = string => Helper.match(string, /\p{Lu}?\p{Ll}+|\p{Lu}+|\p{L}[\p{L}\p{M}]*|\p{N}+|\p{Emoji}/gu) || []
-Helper.words = (string, pattern) => {
-  if (!Helper.exists(pattern)) {
-    return Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
-  }
-  return Helper.match(string, pattern) || []
-}
+Helper.words = (string, pattern) => pattern !== undefined ? Helper.match(string, pattern) || [] : Helper.isASCII(string) ? Helper.asciiWords(string) : Helper.unicodeWords(string)
 Helper.toLowerCase = string => Helper.toString(string).toLowerCase()
 Helper.toUpperCase = string => Helper.toString(string).toUpperCase()
 Helper.capitalize = string => {
@@ -190,7 +177,7 @@ Helper.kebabCase = string => Helper.words(string).join('-').toLowerCase()
 Helper.trainCase = string => Helper.words(string).map(Helper.capitalize).join('-')
 Helper.dotCase = string => Helper.words(string).join('.').toLowerCase()
 Helper.template = (string, props = {}, options = {}) => {
-  const ignoreNotExists = Helper.isBoolean(options.ignoreNotExists) ? options.ignoreNotExists : true
+  const ignoreUndefined = options.ignoreUndefined !== undefined ? options.ignoreUndefined : true
   return Helper.replace(string, /(?<!\\){(.*?)(?<!\\)}|(\\\\?[{}])/g, (match, path, bracket) => {
     if (bracket) {
       return bracket.replace(/\\(\\)?/g, '$1')
@@ -199,14 +186,14 @@ Helper.template = (string, props = {}, options = {}) => {
     if (Helper.isFunction(prop)) {
       prop = prop()
     }
-    return ignoreNotExists ? Helper.toString(prop) : prop
+    return ignoreUndefined && prop === undefined ? '' : prop
   })
 }
 Helper.insert = (string, insertString, startIndex, endIndex) => {
   string = Helper.toString(string)
   insertString = Helper.toString(insertString)
-  startIndex = Helper.exists(startIndex) ? Helper.toInteger(startIndex) : string.length
-  endIndex = Helper.exists(endIndex) ? Helper.toInteger(endIndex) : string.length
+  startIndex = startIndex !== undefined ? startIndex : string.length
+  endIndex = endIndex !== undefined ? endIndex : string.length
   return string.slice(0, startIndex) + insertString + string.slice(startIndex, endIndex)
 }
 Helper.padStart = (string, targetLength, padString) => Helper.toString(string).padStart(targetLength, padString)
@@ -231,11 +218,17 @@ Helper.isType = (value, type) => typeof value === type
 Helper.isTag = (value, tag) => Helper.tagOf(value) === tag
 Helper.isInstance = (value, constructor) => value instanceof constructor
 Helper.isUndefined = value => value === undefined
-Helper.isPrimitive = value => (typeof value !== 'object' && typeof value !== 'function') || value === null
+Helper.isPrimitive = value => {
+  const type = typeof value
+  return (type !== 'object' && type !== 'function') || value === null
+}
 Helper.isNull = value => value === null
 Helper.isNil = value => value == null
 Helper.isObject = value => typeof value === 'object' && value !== null
-Helper.isObjectLike = value => (typeof value === 'object' || typeof value === 'function') && value !== null
+Helper.isObjectLike = value => {
+  const type = typeof value
+  return (type === 'object' || type === 'function') && value !== null
+}
 Helper.isPlainObject = value => Helper.isTag(value, '[object Object]')
 Helper.isFunction = value => typeof value === 'function'
 Helper.isAsyncFunction = value => Helper.isTag(value, '[object AsyncFunction]')
@@ -267,12 +260,10 @@ Helper.isNonNegative = value => value >= 0
 Helper.isNonPositive = value => value <= 0
 Helper.isNatural = value => Number.isInteger(value) && value > 0
 Helper.isWhole = value => Number.isInteger(value) && value >= 0
-Helper.isEmpty = value => !value.length
+Helper.isEmpty = value => !value || !value.length
 Helper.isKey = value => Helper.isString(value) || Helper.isSymbol(value)
-Helper.isIndex = (value, length) => {
-  if (!Helper.exists(length)) {
-    length = Number.MAX_SAFE_INTEGER
-  }
+Helper.isIndex = (value, length = Number.MAX_SAFE_INTEGER) => {
+  length = Number(length)
   return !!length && !Helper.isSymbol(value) && /^(?:0|[1-9]\d*)$/.test(value) && value < length
 }
 Helper.isJSON = value => {
